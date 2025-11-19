@@ -8,6 +8,7 @@ const { generateToken, authMiddleware, roleGuard } = require('./api/auth');
 const { Op } = require("sequelize");
 
 
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
