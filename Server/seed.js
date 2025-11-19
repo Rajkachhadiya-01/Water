@@ -1,6 +1,6 @@
 // server/seed.js
 // seed script: creates users and some sample data
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { sequelize, User, Route, Customer, Bottle, Jag, Delivery } = require('./models');
 
 async function seed() {
