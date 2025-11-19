@@ -1,10 +1,10 @@
 {
-  "name": "mineralwater-server",
+  "name": "water-backend",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
-    "seed": "node seed.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
