@@ -1,5 +1,5 @@
 // client/src/api.js
-const API_BASE = 'https://water-x75b.onrender.com/api';
+const API_BASE = 'https://water-x75b.onrender.com';
 
 export function authHeader() {
   const token = localStorage.getItem('token');
