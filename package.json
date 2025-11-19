@@ -1,0 +1,8 @@
+{
+  "name": "water",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}

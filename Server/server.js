@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { sequelize, User, Route, Customer, Bottle, Jag, Delivery, Payment, Complaint } = require('./models');
-const { generateToken, authMiddleware, roleGuard } = require('./auth');
+const { generateToken, authMiddleware, roleGuard } = require('./api/auth');
 const { Op } = require("sequelize");
 
 
