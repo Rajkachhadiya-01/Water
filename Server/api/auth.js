@@ -1,4 +1,4 @@
-// server/auth.js
+// Server/api/auth.js
 // simple JWT auth & role middleware
 const jwt = require('jsonwebtoken');
 const SECRET = 'change-this-secret-in-prod';

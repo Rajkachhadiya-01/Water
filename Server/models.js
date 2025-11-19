@@ -1,11 +1,18 @@
 // server/models.js
 // Sequelize models and associations
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './data.sqlite',
-  logging: false
+const { Sequelize } = require("sequelize");
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  dialectOptions: {
+    ssl: { require: false },
+  },
+  logging: false,
 });
+
+module.exports = sequelize;
+
 
 const User = sequelize.define('User', {
   name: { type: DataTypes.STRING },
