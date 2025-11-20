@@ -23,25 +23,43 @@ function Login({ onLogin, onNotify }) {
   const [loading, setLoading] = useState(false);
 
   async function submit(e) {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const r = await login(email, password);
-      if (r.token) {
-        localStorage.setItem('token', r.token);
-        localStorage.setItem('role', r.user.role);
-        onNotify({ type: "success", text: "Login successful" });
-        onLogin(r.user.role);
-      } else {
-        onNotify({ type: "error", text: r.error || "Login failed" });
-      }
-    } catch (err) {
-      onNotify({ type: "error", text: err?.error || "Login/network error" });
-    } finally {
-      setLoading(false);
-    }
-  }
+  e.preventDefault();
+  setLoading(true);
 
+  try {
+    const r = await login(email, password);
+
+    if (r.token) {
+      localStorage.setItem("token", r.token);
+      localStorage.setItem("role", r.user.role);
+
+      onNotify({ type: "success", text: "Login successful" });
+
+      if (r.token) {
+        localStorage.setItem("token", r.token);
+        localStorage.setItem("role", r.user.role);
+
+        onNotify({ type: "success", text: "Login successful" });
+
+        if (r.user.role === "admin") {
+          window.location.href = "/admin";
+        } else if (r.user.role === "driver") {
+          window.location.href = "/driver";
+        } else {
+          window.location.href = "/customer";
+        }
+
+        return; // STOP DOUBLE REDIRECT
+      }
+    } else {
+      onNotify({ type: "error", text: r.error || "Login failed" });
+    }
+  } catch (err) {
+    onNotify({ type: "error", text: err?.error || "Login/network error" });
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-300 to-blue-700 p-6">
       {/* Background Water Ripples */}
