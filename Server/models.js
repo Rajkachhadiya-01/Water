@@ -1,88 +1,130 @@
 // Server/models.js
-const { Sequelize, DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  protocol: "postgres",
-  logging: false,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  }
-});
+const MONGODB_URI = process.env.MONGODB_URI;
 
-// MODELS
-const User = sequelize.define("User", {
-  name: DataTypes.STRING,
-  email: { type: DataTypes.STRING, unique: true, allowNull: false },
-  passwordHash: { type: DataTypes.STRING, allowNull: false },
-  role: DataTypes.STRING,
-  lastLat: DataTypes.FLOAT,
-  lastLng: DataTypes.FLOAT,
-});
+if (!MONGODB_URI) {
+  throw new Error("❌ MONGODB_URI is not set in .env");
+}
 
-const Route = sequelize.define("Route", {
-  name: DataTypes.STRING,
-});
+// Connect once when this file is imported
+mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
 
-const Customer = sequelize.define("Customer", {
-  name: DataTypes.STRING,
-  email: { type: DataTypes.STRING, unique: true },
-  phone: DataTypes.STRING,
-  balance: { type: DataTypes.FLOAT, defaultValue: 0 },
-  deposit: { type: DataTypes.FLOAT, defaultValue: 0 },
-});
+const { Schema } = mongoose;
 
-const Bottle = sequelize.define("Bottle", {
-  kind: DataTypes.STRING,
-  quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
-});
+/* ========== SCHEMAS ========== */
 
-const Jag = sequelize.define("Jag", {
-  kind: DataTypes.STRING,
-  quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
-});
+// USERS
+const userSchema = new Schema(
+  {
+    name: String,
+    email: { type: String, unique: true, required: true },
+    passwordHash: { type: String, required: true },
+    role: { type: String, enum: ["admin", "driver", "customer"], required: true },
+    lastLat: Number,
+    lastLng: Number,
+  },
+  { timestamps: true }
+);
 
-const Delivery = sequelize.define("Delivery", {
-  date: { type: DataTypes.DATEONLY, defaultValue: Sequelize.NOW },
-  delivered: { type: DataTypes.BOOLEAN, defaultValue: false },
-  bottles: { type: DataTypes.INTEGER, defaultValue: 1 },
-});
+// ROUTES
+const routeSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    driverId: { type: Schema.Types.ObjectId, ref: "User", default: null },
+  },
+  { timestamps: true }
+);
 
-const Payment = sequelize.define("Payment", {
-  amount: DataTypes.FLOAT,
-  method: DataTypes.STRING,
-});
+// CUSTOMERS
+const customerSchema = new Schema(
+  {
+    name: String,
+    email: { type: String, unique: true },
+    phone: String,
+    balance: { type: Number, default: 0 },
+    deposit: { type: Number, default: 0 },
+    routeId: { type: Schema.Types.ObjectId, ref: "Route", default: null },
+  },
+  { timestamps: true }
+);
 
-const Complaint = sequelize.define("Complaint", {
-  message: DataTypes.TEXT,
-  status: { type: DataTypes.STRING, defaultValue: "open" },
-});
+// INVENTORY
+const bottleSchema = new Schema(
+  {
+    kind: String,
+    quantity: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
-// RELATIONS
-Route.belongsTo(User, { as: "driver" });
-User.hasMany(Route, { foreignKey: "driverId" });
+const jagSchema = new Schema(
+  {
+    kind: String,
+    quantity: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
-Customer.belongsTo(Route);
-Route.hasMany(Customer);
+// DELIVERY
+const deliverySchema = new Schema(
+  {
+    date: { type: Date, default: Date.now },
+    delivered: { type: Boolean, default: false },
+    bottles: { type: Number, default: 1 },
+    routeId: { type: Schema.Types.ObjectId, ref: "Route" },
+    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
+    driverId: { type: Schema.Types.ObjectId, ref: "User" },
+  },
+  { timestamps: true }
+);
 
-Delivery.belongsTo(Route);
-Delivery.belongsTo(Customer);
-Delivery.belongsTo(User, { as: "driver" });
+// PAYMENTS
+const paymentSchema = new Schema(
+  {
+    amount: Number,
+    method: String,
+    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
+  },
+  { timestamps: true }
+);
 
-Payment.belongsTo(Customer);
-Complaint.belongsTo(Customer);
+// COMPLAINTS
+const complaintSchema = new Schema(
+  {
+    message: String,
+    status: { type: String, default: "open" },
+    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
+  },
+  { timestamps: true }
+);
+
+/* ========== MODELS ========== */
+const User = mongoose.model("User", userSchema);
+const Route = mongoose.model("Route", routeSchema);
+const Customer = mongoose.model("Customer", customerSchema);
+const Bottle = mongoose.model("Bottle", bottleSchema);
+const Jag = mongoose.model("Jag", jagSchema);
+const Delivery = mongoose.model("Delivery", deliverySchema);
+const Payment = mongoose.model("Payment", paymentSchema);
+const Complaint = mongoose.model("Complaint", complaintSchema);
 
 module.exports = {
-  sequelize,
+  mongoose,
   User,
   Route,
   Customer,
   Bottle,
   Jag,
   Delivery,
- Payment,
-  Complaint
+  Payment,
+  Complaint,
 };
