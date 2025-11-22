@@ -52,7 +52,7 @@ function Notification({ message, type, onClose }) {
 
 /* ---------- LOGIN PAGE ---------- */
 function Login({ onLogin, onNotify }) {
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
