@@ -7,7 +7,6 @@ if (!MONGODB_URI) {
   throw new Error("❌ MONGODB_URI is not set in .env");
 }
 
-
 // Connect once when this file is imported
 mongoose
   .connect(MONGODB_URI, {

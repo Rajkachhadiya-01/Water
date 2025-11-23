@@ -34,9 +34,9 @@ function LoginPage({ onLogin, onNotify }) {
   const [loading, setLoading] = useState(false);
 
   const demoAccounts = [
-    { role: 'Admin', email: 'admin@example.com', pass: 'adminpass' },
-    { role: 'Driver', email: 'driver@example.com', pass: 'driverpass' },
-    { role: 'Customer', email: 'customer@example.com', pass: 'customerpass' }
+    // { role: 'Admin', email: 'admin@example.com', pass: 'adminpass' },
+    // { role: 'Driver', email: 'driver@example.com', pass: 'driverpass' },
+    // { role: 'Customer', email: 'customer@example.com', pass: 'customerpass' }
   ];
 
   async function submit(e) {
@@ -120,7 +120,7 @@ function LoginPage({ onLogin, onNotify }) {
 
           {/* Quick Login */}
           <div className="mt-6">
-            <p className="text-xs text-center text-gray-500 mb-3">Quick Demo Login</p>
+           {/* <p className="text-xs text-center text-gray-500 mb-3">Quick Demo Login</p>  */}
             <div className="grid grid-cols-3 gap-2">
               {demoAccounts.map(acc => (
                 <button
